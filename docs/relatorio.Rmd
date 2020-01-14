@@ -1,0 +1,66 @@
+---
+title: "Relatório whoqol - Baixada Santista"
+author: "Consudata consultoria e organização de dados"
+date: "14/01/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+library(tidyverse)
+library(pander)
+library(JurisMiner)
+knitr::opts_chunk$set(echo = TRUE)
+panderOptions('table.alignment.default', function(df)
+    ifelse(sapply(df, is.numeric), 'right', 'left'))
+panderOptions('table.split.table', Inf)
+panderOptions('big.mark', ",")
+panderOptions('keep.trailing.zeros', TRUE)
+```
+
+```{r}
+load("data/baseRData")
+df <- base %>% 
+  filter(str_detect(base,"Baixada"))
+```
+
+## Geral
+
+
+```{r}
+df %>% 
+# filter(base == "Inseridos Baixada") %>% 
+ count(base) %>% 
+ pander()
+```
+
+### Grupo por sexo
+```{r}
+df %>% 
+ count(base,sexo) %>% 
+ pander()
+```
+
+### Idade média assistidos
+
+```{r}
+idade <- df %>% 
+  filter(base=="Assistidos Baixada") %>% 
+ mutate(idade = lapso(data_nascimento,Sys.Date(),"ano"),
+        faixa_etaria = cut(idade,
+                           b = c(-Inf,24,34,44,54,Inf),
+                           labels = c("Até 24 anos",
+                                      "De 25 a 34 anos",
+                                      "De 35 a 44 anos",
+                                      "De 45 a 54 anos",
+                                      "De 55 anos acima"))) %>%
+ count(faixa_etaria)
+
+pander(idade)
+```
+
+## Idade média inseridos
+
+```{r}
+
+```
+
